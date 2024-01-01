@@ -14,14 +14,12 @@ import { Loading } from "./src/components/Loading";
 
 import { CartContextProvider } from "./src/contexts/CartContext";
 import { onesignalInitialize } from "./src/libs/onesignal";
-import { tagUserEmailCreate } from "./src/notifications/tags";
 
 export default function App() {
   const [fontsLoaded] = useFonts({ Roboto_400Regular, Roboto_700Bold });
 
   useEffect(() => {
     onesignalInitialize();
-    tagUserEmailCreate("joaomoreira.a.s@gmail.com");
   }, []);
 
   return (

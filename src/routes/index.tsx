@@ -7,39 +7,50 @@ import { OSNotification, OneSignal } from "react-native-onesignal";
 import { useEffect, useState } from "react";
 import { Notification } from "../components/Notification";
 
+const linking = {
+  prefixes: [
+    "com.techsolutions.igniteshoes://",
+    "igniteshoesapp://",
+    "exp+igniteshoesapp://",
+  ],
+  config: {
+    screens: {
+      details: {
+        path: "details/:productId",
+        parse: {
+          productId: (productId: string) => productId,
+        },
+      },
+    },
+  },
+};
+
 export function Routes() {
   const { colors } = useTheme();
-  const [notification, setNotification] = useState<OSNotification | null>();
+  const [notification, setNotification] = useState<OSNotification>();
 
   const theme = DefaultTheme;
   theme.colors.background = colors.gray[700];
+
   useEffect(() => {
     const unsubscribe = OneSignal.Notifications.addEventListener(
       "foregroundWillDisplay",
       (event) => {
+        console.log(event);
+
         setNotification(event.getNotification());
       }
     );
-    return unsubscribe;
-  }, []);
-
-  useEffect(() => {
-    const unsubscribe = OneSignal.Notifications.addEventListener(
-      "click",
-      (event) => {
-        console.log("Notificação foi clicada!");
-      }
-    );
-    return unsubscribe;
+    return () => unsubscribe;
   }, []);
 
   return (
-    <NavigationContainer theme={theme}>
+    <NavigationContainer theme={theme} linking={linking}>
       <AppRoutes />
       {notification && (
         <Notification
           data={notification}
-          onClose={() => setNotification(null)}
+          onClose={() => setNotification(undefined)}
         />
       )}
     </NavigationContainer>
